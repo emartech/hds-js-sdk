@@ -6,8 +6,9 @@ const Segments = require('./endpoints/segments');
 
 class HdsApi {
 
-  static create({ customerId }) {
-    const request = RequestFactory.create(customerId);
+  static create(params) {
+    params = params || {};
+    const request = RequestFactory.create(params.customerId);
 
     return new HdsApi(request);
   }

@@ -42,7 +42,8 @@ class Segments {
   }
 
 
-  _polling(segmentPromise, attempts = 0) {
+  _polling(segmentPromise, attempts) {
+    attempts = attempts || 0;
     if (attempts >= config.polling.attempts) {
       return Promise.reject(new Error('No result got in time'));
     }
