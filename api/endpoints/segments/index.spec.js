@@ -4,6 +4,7 @@ const RequestFactory = require('../../../lib/request-factory');
 const HdsApi = require('../../');
 const Segment = require('./');
 const Timer = require('../../../lib/timer');
+const config = require('../../../config');
 
 describe('Segments ', function() {
   let subject;
@@ -20,6 +21,8 @@ describe('Segments ', function() {
       get: this.sandbox.stub().resolves({ body: pollResponse, statusCode: 200 })
     };
     this.sandbox.stub(RequestFactory, 'create').returns(request);
+    this.sandbox.stub(config.polling, 'wait', 5000);
+    this.sandbox.stub(config.polling, 'attempts', 20);
 
     subject = HdsApi.create(8823).segments;
   });
@@ -99,7 +102,7 @@ describe('Segments ', function() {
 
 
       it('should wait some time between polls', function() {
-        expect(Timer.wait).to.calledWith(5000);
+        expect(Timer.wait).to.calledWith(config.polling.wait);
         expect(Timer.wait).to.calledThrice;
       });
 
@@ -111,7 +114,7 @@ describe('Segments ', function() {
         try {
           yield subject.create('SELECT event_time FROM emarsys_email_send', { autoPoll: true });
         } catch (e) {
-          expect(request.get.callCount).to.eql(20);
+          expect(request.get.callCount).to.eql(config.polling.attempts);
           expect(e.message).to.eql('No result got in time');
           return;
         }

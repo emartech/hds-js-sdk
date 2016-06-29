@@ -1,8 +1,8 @@
 'use strict';
 
 const Timer = require('../../../lib/timer');
-const POLL_WAIT = 5000;
-const POLL_MAX_ATTEMPTS = 20;
+const config = require('../../../config');
+
 
 class Segments {
 
@@ -43,7 +43,7 @@ class Segments {
 
 
   _polling(segmentPromise, attempts = 0) {
-    if (attempts >= POLL_MAX_ATTEMPTS) {
+    if (attempts >= config.polling.attempts) {
       return Promise.reject(new Error('No result got in time'));
     }
 
@@ -52,7 +52,7 @@ class Segments {
         if (result) {
           return result;
         }
-        return Timer.wait(POLL_WAIT).then(() => this._polling(segmentPromise, attempts + 1));
+        return Timer.wait(config.polling.wait).then(() => this._polling(segmentPromise, attempts + 1));
       });
     });
   }
