@@ -3,6 +3,7 @@
     "emarsys"
   ],
   "rules": {
+    "no-unused-expressions": 0,
     "max-len": [
       2,
       200,
