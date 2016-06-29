@@ -18,7 +18,8 @@
     "url": "git+https://github.com/emartech/hds-js-sdk.git"
   },
   "author": "AIM clan <suite-clan-aim@emarsys.com>",
-  "license": "isc",
+  "license": "ISC",
+  "description": "SDK for HDS",
   "bugs": {
     "url": "https://github.com/emartech/hds-js-sdk/issues"
   },
@@ -30,7 +31,8 @@
   "dependencies": {
     "escher-keypool": "1.2.1",
     "escher-suiteapi-js": "8.1.0",
-    "request": "2.72.0"
+    "request": "2.72.0",
+    "sinon-as-promised": "4.0.0"
   },
   "devDependencies": {
     "chai": "3.5.0",

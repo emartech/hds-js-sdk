@@ -5,6 +5,7 @@ const chai = require('chai');
 const sinonChai = require('sinon-chai');
 const chaiSubset = require('chai-subset');
 const chaiPromise = require('chai-as-promised');
+require('sinon-as-promised');
 
 chai.use(chaiSubset);
 chai.use(sinonChai);
