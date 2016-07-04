@@ -2,7 +2,7 @@
 
 module.exports = {
   hds: {
-    host: process.env.HDS_HOST || 'api.emarsys.net',
+    host: process.env.HDS_HOST || 'hds-api.emarsys.net',
     port: process.env.HDS_PORT || 443,
     escherKeyId: process.env.HDS_ESCHER_KEY_ID,
     credentialScope: process.env.HDS_CREDENTIAL_SCOPE || 'eu/suite/ems_request',

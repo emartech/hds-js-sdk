@@ -18,7 +18,11 @@ class Segments {
 
   create(query, params) {
     params = params || {};
-    let segmentPromise = this._request.post('/segments', { query: query }).then(response => JSON.parse(response.body));
+    let segmentPromise = this._request.post('/segments', { query: query })
+      .then(response => JSON.parse(response.body))
+      .then(response => Object.assign(response, {
+        poll_url: response.poll_url.replace(/\/customers\/\d+/, '')
+      }));
 
     if (params.autoPoll) {
       return this._polling(segmentPromise);

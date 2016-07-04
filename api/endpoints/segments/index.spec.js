@@ -9,16 +9,11 @@ const config = require('../../../config');
 describe('Segments ', function() {
   let subject;
   let request;
-  let createResponse;
-  let pollResponse;
 
   beforeEach(function() {
-    createResponse = '{"replyCode":0,"poll_url":"/customers/123/segments/123abc"}';
-    pollResponse = '{"replyCode":0,"url":"https://hds-api/result.csv"}';
-
     request = {
-      post: this.sandbox.stub().resolves({ body: createResponse }),
-      get: this.sandbox.stub().resolves({ body: pollResponse, statusCode: 200 })
+      post: this.sandbox.stub().resolves({ body: '{"replyCode":0,"poll_url":"/customers/123/segments/123abc"}' }),
+      get: this.sandbox.stub().resolves({ body: '{"replyCode":0,"url":"https://hds-api/result.csv"}', statusCode: 200 })
     };
     this.sandbox.stub(RequestFactory, 'create').returns(request);
     this.sandbox.stub(config.polling, 'wait', 5000);
@@ -56,7 +51,7 @@ describe('Segments ', function() {
     it('should return with the poll url', function*() {
       let pollUrl = yield subject.create('SELECT event_time FROM emarsys_email_send');
 
-      expect(pollUrl).to.eql(JSON.parse(createResponse));
+      expect(pollUrl).to.eql({ replyCode: 0, poll_url: '/segments/123abc' });
     });
 
 
@@ -68,7 +63,7 @@ describe('Segments ', function() {
         request.get.onCall(0).resolves({ body: '', statusCode: 204 });
         request.get.onCall(1).resolves({ body: '', statusCode: 204 });
         request.get.onCall(2).resolves({ body: '', statusCode: 204 });
-        request.get.onCall(3).resolves({ body: pollResponse, statusCode: 200 });
+        request.get.onCall(3).resolves({ body: '{"replyCode":0,"url":"https://hds-api/result.csv"}', statusCode: 200 });
 
         this.sandbox.stub(Timer, 'wait').resolves();
 
@@ -77,7 +72,7 @@ describe('Segments ', function() {
 
 
       it('should poll for the result', function() {
-        expect(request.get).to.calledWithExactly('/customers/123/segments/123abc');
+        expect(request.get).to.calledWithExactly('/segments/123abc');
       });
 
 
@@ -87,7 +82,7 @@ describe('Segments ', function() {
 
 
       it('should periodically poll for the result', function() {
-        expect(request.get).to.calledWithExactly('/customers/123/segments/123abc');
+        expect(request.get).to.calledWithExactly('/segments/123abc');
       });
 
 
@@ -130,23 +125,23 @@ describe('Segments ', function() {
   describe('#poll', function() {
 
     it('should check for result on the poll url', function*() {
-      yield subject.poll('/customers/123/segments/123abc');
+      yield subject.poll('/this/is/my/poll/url');
 
-      expect(request.get).to.calledWithExactly('/customers/123/segments/123abc');
+      expect(request.get).to.calledWithExactly('/this/is/my/poll/url');
     });
 
 
     it('should return null if segment is not ready yet', function*() {
       request.get = this.sandbox.stub().resolves({ body: '', statusCode: 204 });
 
-      const result = yield subject.poll('/customers/123/segments/123abc');
+      const result = yield subject.poll('/this/is/my/poll/url');
 
       expect(result).to.equal(null);
     });
 
 
     it('should return result url if segment is ready', function*() {
-      const result = yield subject.poll('/customers/123/segments/123abc');
+      const result = yield subject.poll('/this/is/my/poll/url');
 
       expect(result).to.eql({ replyCode: 0, url: 'https://hds-api/result.csv' });
     });
@@ -158,7 +153,7 @@ describe('Segments ', function() {
       request.get = this.sandbox.stub().rejects(error);
 
       try {
-        yield subject.poll('/customers/123/segments/123abc');
+        yield subject.poll('/this/is/my/poll/url');
       } catch (e) {
         expect(e.message).to.eql('Non-existing segment');
         expect(e.code).to.eql(404);
@@ -169,21 +164,6 @@ describe('Segments ', function() {
     });
 
   });
-
-
-  // it('should return url returned from polling', function*() {
-  //   RequestFactory.prototype.pollSegmentResult
-  //     .onCall(0).throws(new Error('Empty response'));
-  //   RequestFactory.prototype.pollSegmentResult
-  //     .onCall(1)
-  //     .returns(Promise.resolve({ url: 'http://path-to-download' }));
-  //
-  //
-  //   yield subject.create('any hdsql query');
-  //
-  //   expect(RequestFactory.prototype.pollSegmentResult).to.have.been.calledTwice;
-  //   expect(Delay.wait).to.have.been.calledWith(1000);
-  // });
 
 });
 
