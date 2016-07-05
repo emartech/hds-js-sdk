@@ -1,5 +1,6 @@
 'use strict';
 
+const url = require('url');
 const Timer = require('../../../lib/timer');
 const config = require('../../../config');
 
@@ -33,7 +34,7 @@ class Segments {
 
 
   poll(path) {
-    return this._request.get(path).then(this._checkResponse);
+    return this._request.get(path).then(this._checkResponse.bind(this));
   }
 
 
@@ -42,7 +43,7 @@ class Segments {
       return null;
     }
 
-    return JSON.parse(response.body);
+    return this._processResult(JSON.parse(response.body));
   }
 
 
@@ -60,6 +61,15 @@ class Segments {
         return Timer.wait(config.polling.wait).then(() => this._polling(segmentPromise, attempts + 1));
       });
     });
+  }
+
+
+  _processResult(result) {
+    let urlParts = url.parse(result.url);
+    urlParts.host = config.hds.host;
+    urlParts.protocol = config.hds.secure ? 'https:' : 'http:';
+    result.url = url.format(urlParts);
+    return result;
   }
 }
 

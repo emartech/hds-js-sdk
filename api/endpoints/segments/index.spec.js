@@ -18,6 +18,8 @@ describe('Segments ', function() {
     this.sandbox.stub(RequestFactory, 'create').returns(request);
     this.sandbox.stub(config.polling, 'wait', 5000);
     this.sandbox.stub(config.polling, 'attempts', 20);
+    this.sandbox.stub(config.hds, 'host', 'www.real-hds.com');
+    this.sandbox.stub(config.hds, 'secure', true);
 
     subject = HdsApi.create(8823).segments;
   });
@@ -92,7 +94,7 @@ describe('Segments ', function() {
 
 
       it('should return with the result url', function() {
-        expect(result).to.eql({ replyCode: 0, url: 'https://hds-api/result.csv' });
+        expect(result).to.eql({ replyCode: 0, url: 'https://www.real-hds.com/result.csv' });
       });
 
 
@@ -140,10 +142,40 @@ describe('Segments ', function() {
     });
 
 
-    it('should return result url if segment is ready', function*() {
-      const result = yield subject.poll('/this/is/my/poll/url');
+    describe('return result if segment is ready', function() {
 
-      expect(result).to.eql({ replyCode: 0, url: 'https://hds-api/result.csv' });
+      it('should resolve with reply code and url', function*() {
+        const result = yield subject.poll('/this/is/my/poll/url');
+
+        expect(result).to.have.property('replyCode', 0);
+        expect(result).to.have.property('url', 'https://www.real-hds.com/result.csv');
+      });
+
+
+      describe('.url', function() {
+
+        it('should contain HDS host set in config', function*() {
+          const result = yield subject.poll('/this/is/my/poll/url');
+
+          expect(result.url).to.contain(config.hds.host);
+        });
+
+        it('should have HTTPS protocol if hds is secure', function*() {
+          this.sandbox.stub(config.hds, 'secure', true);
+          const result = yield subject.poll('/this/is/my/poll/url');
+
+          expect(result.url).to.contain('https:');
+        });
+
+        it('should have HTTPS protocol if hds is secure', function*() {
+          this.sandbox.stub(config.hds, 'secure', false);
+          const result = yield subject.poll('/this/is/my/poll/url');
+
+          expect(result.url).to.contain('http:');
+        });
+
+      });
+
     });
 
 
