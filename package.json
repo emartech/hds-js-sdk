@@ -30,7 +30,7 @@
   "homepage": "https://github.com/emartech/hds-js-sdk",
   "dependencies": {
     "escher-keypool": "1.2.1",
-    "escher-suiteapi-js": "8.3.0",
+    "escher-suiteapi-js": "8.3.1",
     "request": "2.72.0"
   },
   "devDependencies": {
