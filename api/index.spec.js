@@ -5,11 +5,12 @@ const RequestFactory = require('../lib/request-factory');
 
 describe('HDS API', function() {
 
-  describe('.create', function() {
+  describe('#create', function() {
     let result;
 
     beforeEach(function() {
       this.sandbox.stub(RequestFactory, 'create');
+      this.sandbox.stub(RequestFactory, 'createWithoutCustomer');
       result = Api.create({ customerId: '[customer id]' });
     });
 
@@ -24,6 +25,5 @@ describe('HDS API', function() {
     });
 
   });
-
 
 });

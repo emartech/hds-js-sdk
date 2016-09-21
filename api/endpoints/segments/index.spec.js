@@ -16,6 +16,7 @@ describe('Segments ', function() {
       get: this.sandbox.stub().resolves({ body: '{"replyCode":0,"url":"https://hds-api/result.csv"}', statusCode: 200 })
     };
     this.sandbox.stub(RequestFactory, 'create').returns(request);
+    this.sandbox.stub(RequestFactory, 'createWithoutCustomer');
     this.sandbox.stub(config.polling, 'wait', 5000);
     this.sandbox.stub(config.polling, 'attempts', 20);
     this.sandbox.stub(config.hds, 'host', 'www.real-hds.com');
