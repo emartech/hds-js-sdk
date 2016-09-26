@@ -24,12 +24,12 @@ describe('DailyDump', function() {
       expect(request.get).calledWithExactly('/daily_dump/email_sends/2016-08-11');
     });
 
-    it('should return with the parsed json on successful request', function*() {
+    it('should return with the parsed json on successful request with replaced domain', function*() {
       let subject = DailyDump.create(request);
 
       let result = yield subject.getByTable('email_sends', '2016-08-11');
 
-      expect(result).to.eql({ url: 'https://hds-api/result.csv' });
+      expect(result).to.eql({ url: 'https://hds-api.emarsys.net/result.csv' });
     });
 
     it('should throw an error when the dump is not ready', function*() {

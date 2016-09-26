@@ -1,7 +1,8 @@
 'use strict';
 
-class DailyDump {
+let Domain = require('../../../lib/domain/domain');
 
+class DailyDump {
 
   static create(request) {
     return new DailyDump(request);
@@ -22,7 +23,9 @@ class DailyDump {
           throw new Error(`Unexpected status code ${response.statusCode}`);
         }
 
-        return JSON.parse(response.body);
+        let result = JSON.parse(response.body);
+        result.url = Domain.replaceToPublic(result.url);
+        return result;
       });
   }
 }
